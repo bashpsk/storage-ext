@@ -4,7 +4,7 @@ sealed class MakeFileResult {
 
     data class Failed(val message: String) : MakeFileResult()
 
-    data class Exist(val directoryFile: DirectoryFile) : MakeFileResult()
+    data class Exist(val path: String, val name: String) : MakeFileResult()
 
-    data class Success(val directoryFile: DirectoryFile) : MakeFileResult()
+    data class Success(val path: String, val name: String) : MakeFileResult()
 }

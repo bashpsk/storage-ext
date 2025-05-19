@@ -13,8 +13,10 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.update
 import java.io.File
 
 object StorageExt {
@@ -74,38 +76,74 @@ object StorageExt {
         }.flowOn(context = Dispatchers.IO)
     }
 
-    fun getDirectoryFiles(path: String): Flow<ImmutableList<DirectoryFile>> {
+    fun getDirectoryFiles(path: String): Flow<DirectoryFileData> {
 
         return flow {
 
-            val directoryFileList = try {
+            val folderList = MutableStateFlow(value = persistentListOf<DirectoryData>())
+            val fileList = MutableStateFlow(value = persistentListOf<FileData>())
 
-                File(path).listFiles()?.map { file ->
+            try {
 
-                    when (file.isFile) {
+                File(path).listFiles()?.forEach { fileItem ->
 
-                        true -> DirectoryFile.File(
-                            name = file.name,
-                            path = file.path,
-                            extension = file.extension,
-                            visibleType = getFileVisibleType(file = file),
-                            fileType = getFileType(file = file)
-                        )
+                    when (fileItem.isFile) {
 
-                        false -> DirectoryFile.Folder(
-                            name = file.name,
-                            path = file.path,
-                            visibleType = getFileVisibleType(file = file)
-                        )
+                        true -> {
+
+                            val newFileData = FileData(
+                                name = fileItem.name,
+                                path = fileItem.path,
+                                extension = fileItem.extension,
+                                visibleType = getFileVisibleType(file = fileItem),
+                                fileType = getFileType(file = fileItem),
+                                size = fileItem.length(),
+                                modifiedDate = fileItem.lastModified()
+                            )
+
+                            fileList.update { filesOld -> filesOld.add(element = newFileData) }
+                        }
+
+                        false -> {
+
+                            val folders = fileItem.listFiles()?.count { folder ->
+
+                                folder.isDirectory
+                            } ?: 0
+
+                            val files = fileItem.listFiles()?.count { file -> file.isFile } ?: 0
+
+                            val newDirectoryData=DirectoryData(
+                                name = fileItem.name,
+                                path = fileItem.path,
+                                visibleType = getFileVisibleType(file = fileItem),
+                                folders = folders,
+                                files = files,
+                                modifiedDate = fileItem.lastModified()
+                            )
+
+                            folderList.update { foldersOld -> foldersOld.add(newDirectoryData) }
+                        }
                     }
-                }?.toImmutableList() ?: persistentListOf()
+                }
+
+                val newDirectoryFileData = DirectoryFileData(
+                    folders = folderList.value.toImmutableList(),
+                    files = fileList.value.toImmutableList()
+                )
+
+                emit(value = newDirectoryFileData)
             } catch (exception: Exception) {
 
                 Log.e("StorageExt", exception.message, exception)
-                persistentListOf()
-            }
 
-            emit(value = directoryFileList)
+                val newDirectoryFileData = DirectoryFileData(
+                    folders = folderList.value.toImmutableList(),
+                    files = fileList.value.toImmutableList()
+                )
+
+                emit(value = newDirectoryFileData)
+            }
         }.flowOn(context = Dispatchers.IO)
     }
 
@@ -129,24 +167,7 @@ object StorageExt {
 
                 true -> {
 
-                    val directoryFile = when (sourceFile.isFile) {
-
-                        true -> DirectoryFile.File(
-                            name = sourceFile.name,
-                            path = sourceFile.path,
-                            extension = sourceFile.extension,
-                            visibleType = getFileVisibleType(file = sourceFile),
-                            fileType = getFileType(file = sourceFile)
-                        )
-
-                        false -> DirectoryFile.Folder(
-                            name = sourceFile.name,
-                            path = sourceFile.path,
-                            visibleType = getFileVisibleType(file = sourceFile)
-                        )
-                    }
-
-                    MakeFileResult.Exist(directoryFile = directoryFile)
+                    MakeFileResult.Exist(path = sourceFile.path, name = sourceFile.name)
                 }
 
                 false -> {
@@ -157,26 +178,9 @@ object StorageExt {
                         false -> sourceFile.createNewFile()
                     }
 
-                    val directoryFile = when (sourceFile.isFile) {
-
-                        true -> DirectoryFile.File(
-                            name = sourceFile.name,
-                            path = sourceFile.path,
-                            extension = sourceFile.extension,
-                            visibleType = getFileVisibleType(file = sourceFile),
-                            fileType = getFileType(file = sourceFile)
-                        )
-
-                        false -> DirectoryFile.Folder(
-                            name = sourceFile.name,
-                            path = sourceFile.path,
-                            visibleType = getFileVisibleType(file = sourceFile)
-                        )
-                    }
-
                     when (result) {
 
-                        true -> MakeFileResult.Success(directoryFile = directoryFile)
+                        true -> MakeFileResult.Success(sourceFile.path, sourceFile.name)
                         false -> MakeFileResult.Failed(message = "Directory File Does Not Created!")
                     }
                 }
