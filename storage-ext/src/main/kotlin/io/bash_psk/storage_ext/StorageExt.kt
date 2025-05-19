@@ -7,6 +7,7 @@ import android.os.StatFs
 import android.os.storage.StorageManager
 import android.os.storage.StorageVolume
 import android.util.Log
+import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -94,6 +95,7 @@ object StorageExt {
                             val newFileData = FileData(
                                 name = fileItem.name,
                                 path = fileItem.path,
+                                uri = fileItem.toUri().toString(),
                                 extension = fileItem.extension,
                                 visibleType = getFileVisibleType(file = fileItem),
                                 fileType = getFileType(file = fileItem),
@@ -116,6 +118,7 @@ object StorageExt {
                             val newDirectoryData=DirectoryData(
                                 name = fileItem.name,
                                 path = fileItem.path,
+                                uri = fileItem.toUri().toString(),
                                 visibleType = getFileVisibleType(file = fileItem),
                                 folders = folders,
                                 files = files,
