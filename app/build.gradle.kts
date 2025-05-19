@@ -81,6 +81,9 @@ dependencies {
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.datetime)
 
+    //  PSK LIBS        :
+    implementation(libs.bashpsk.empty.format)
+
     //  MODULE          :
     implementation(project(":storage-ext"))
 }

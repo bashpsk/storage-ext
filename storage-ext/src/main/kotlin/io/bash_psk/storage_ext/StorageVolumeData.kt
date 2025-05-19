@@ -1,4 +1,4 @@
-package io.bash_psk.storage_ext.storage
+package io.bash_psk.storage_ext
 
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
@@ -11,10 +11,12 @@ import kotlin.uuid.Uuid
 @Immutable
 @Parcelize
 @Serializable
-data class DirectoryData(
+data class StorageVolumeData(
     val uuid: String = Uuid.random().toString(),
     val name: String = "",
     val path: String = "",
-    val parent: String = "",
-    val isFolder: Boolean = false
+    val totalSize: Long = 0L,
+    val availableSize: Long = 0L,
+    val usedSize: Long = 0L,
+    val volumeType: StorageVolumeType = StorageVolumeType.UNKNOWN
 ) : Parcelable
