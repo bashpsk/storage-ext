@@ -300,7 +300,7 @@ private fun StorageVolumeSmall(
                 )
 
                 Text(
-                    text = volumeData().name,
+                    text = volumeData().title,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,

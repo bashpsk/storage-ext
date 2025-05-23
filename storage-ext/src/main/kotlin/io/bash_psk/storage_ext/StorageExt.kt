@@ -39,7 +39,7 @@ object StorageExt {
                             val path = volume.directory?.path ?: ""
 
                             StorageVolumeData(
-                                name = volume.getDescription(context),
+                                title = volume.getDescription(context),
                                 path = path,
                                 totalSize = getTotalMemory(path = path),
                                 availableSize = getFreeMemory(path = path),
@@ -56,7 +56,7 @@ object StorageExt {
                             storageManager.getStorageVolume(File(path))?.let { volume ->
 
                                 StorageVolumeData(
-                                    name = volume.getDescription(context),
+                                    title = volume.getDescription(context),
                                     path = path,
                                     totalSize = getTotalMemory(path = path),
                                     availableSize = getFreeMemory(path = path),
@@ -93,7 +93,7 @@ object StorageExt {
                         true -> {
 
                             val newFileData = FileData(
-                                name = fileItem.name,
+                                title = fileItem.name,
                                 path = fileItem.path,
                                 uri = fileItem.toUri().toString(),
                                 extension = fileItem.extension,
@@ -116,7 +116,7 @@ object StorageExt {
                             val files = fileItem.listFiles()?.count { file -> file.isFile } ?: 0
 
                             val newDirectoryData=DirectoryData(
-                                name = fileItem.name,
+                                title = fileItem.name,
                                 path = fileItem.path,
                                 uri = fileItem.toUri().toString(),
                                 visibleType = getFileVisibleType(file = fileItem),

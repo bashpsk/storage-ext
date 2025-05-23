@@ -13,7 +13,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class FileData(
     val uuid: String = Uuid.random().toString(),
-    val name: String = "",
+    val title: String = "",
     val path: String = "",
     val uri: String = "",
     val extension: String = "",

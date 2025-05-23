@@ -13,7 +13,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class StorageVolumeData(
     val uuid: String = Uuid.random().toString(),
-    val name: String = "",
+    val title: String = "",
     val path: String = "",
     val totalSize: Long = 0L,
     val availableSize: Long = 0L,
