@@ -8,27 +8,40 @@ enum class FileType(
     val extension: ImmutableList<String> = persistentListOf()
 ) {
 
+    ANDROID("APK", persistentListOf("apk", "aab")),
     ARCHIVE("Archive", persistentListOf("zip", "rar", "7z", "tar", "gz", "xz")),
     AUDIO("Audio", persistentListOf("mp3", "wav", "aac", "flac", "ogg", "m4a")),
     BACK_UP("Back-Up", persistentListOf("bak", "backup", "dump", "bkp", "tmp")),
-    BINARY("Binary", persistentListOf("bin", "dat", "dll", "so", "class")),
-    DATABASE("Database", persistentListOf("db", "sql", "sqlite")),
+    BINARY("Binary", persistentListOf("bin", "dat", "dll", "so", "class", "sys", "config", "ini")),
     DISK_IMAGE("Disk Image", persistentListOf("iso", "img", "dmg")),
-    DOCUMENT("Document", persistentListOf("pdf", "doc", "docx", "odt", "rtf")),
-    CAD_FILE("CAD File", persistentListOf("dwg", "dxf", "stl", "eps")),
+    DOCUMENT("Document", persistentListOf("doc", "docx", "odt", "rtf")),
     CODE("Code", CodeFileExtensions),
     E_BOOK("E-Book", persistentListOf("epub", "mobi", "azw3")),
-    EXECUTABLE("Executable", persistentListOf("exe", "apk")),
+    EXECUTABLE("Executable", persistentListOf("exe", "msi", "dmg", "deb")),
     FONT("Font", persistentListOf("ttf", "otf", "woff", "woff2")),
-    GAME_DATA_FILE("Game Data File", persistentListOf("dat", "sav", "cfg", "ini", "pak", "obb")),
-    GIS_MAPS("GIS Maps", persistentListOf("kml", "kmz", "gpx", "geojson")),
-    IMAGE("Image", persistentListOf("jpg", "jpeg", "png", "gif", "bmp", "svg", "webp")),
+    GAME_DATA("Game Data", persistentListOf("dat", "sav", "cfg", "pak", "obb")),
+    GIF("Gif", persistentListOf("gif")),
+    IMAGE("Image", persistentListOf("jpg", "jpeg", "png", "bmp", "webp")),
     LOG_FILE("Log File", persistentListOf("log", "trace", "audit")),
+    PDF("PDF", persistentListOf("pdf")),
     PRESENTATION("Presentation", persistentListOf("ppt", "pptx", "odp")),
+    SKETCH("Sketch", persistentListOf("pde", "sketch", "ai", "psd")),
     SPREADSHEET("Spreadsheet", persistentListOf("xls", "xlsx", "csv", "ods")),
-    SYSTEM("System", persistentListOf("dll", "sys", "config", "ini")),
     SUB_TITLE("Sub-Title", persistentListOf("srt", "sub", "ass", "vtt", "ssa")),
     THREE_D_MODELS("3D Models", persistentListOf("blend", "obj", "fbx", "dae", "gltf", "glb")),
+    TEXT("Text", persistentListOf("txt", "md", "log", "diff", "patch", "in", "out")),
     UNKNOWN("Unknown", persistentListOf()),
-    VIDEO("Video", persistentListOf("mp4", "avi", "mkv", "mov", "wmv", "flv"))
+    VIDEO("Video", persistentListOf("mp4", "avi", "mkv", "mov", "wmv", "flv")),
+    VECTOR("Vector", persistentListOf("svg", "eps", "cdr"));
+
+    companion object {
+
+        fun getFileType(extension: String): FileType {
+
+            return FileType.entries.firstOrNull { fileType ->
+
+                fileType.extension.contains(extension.lowercase())
+            } ?: UNKNOWN
+        }
+    }
 }

@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.os.storage.StorageManager
-import android.os.storage.StorageVolume
 import android.util.Log
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
@@ -44,7 +43,7 @@ object StorageExt {
                                 totalSize = getTotalMemory(path = path),
                                 availableSize = getFreeMemory(path = path),
                                 usedSize = getUsedMemory(path = path),
-                                volumeType = getVolumeType(volume = volume)
+                                volumeType = StorageVolumeType.getVolumeType(volume = volume)
                             )
                         }.toImmutableList()
                     }
@@ -61,7 +60,7 @@ object StorageExt {
                                     totalSize = getTotalMemory(path = path),
                                     availableSize = getFreeMemory(path = path),
                                     usedSize = getUsedMemory(path = path),
-                                    volumeType = getVolumeType(volume = volume)
+                                    volumeType = StorageVolumeType.getVolumeType(volume = volume)
                                 )
                             } ?: StorageVolumeData()
                         }.toImmutableList()
@@ -69,7 +68,7 @@ object StorageExt {
                 }.filter { volumeData -> volumeData.path.isNotEmpty() }.toImmutableList()
             } catch (exception: Exception) {
 
-                Log.e("StorageExt", exception.message, exception)
+                Log.w("StorageExt", exception.message, exception)
                 persistentListOf()
             }
 
@@ -97,8 +96,8 @@ object StorageExt {
                                 path = fileItem.path,
                                 uri = fileItem.toUri().toString(),
                                 extension = fileItem.extension,
-                                visibleType = getFileVisibleType(file = fileItem),
-                                fileType = getFileType(file = fileItem),
+                                visibleType = FileVisibleType.getFileVisibleType(file = fileItem),
+                                fileType = FileType.getFileType(extension = fileItem.extension),
                                 size = fileItem.length(),
                                 modifiedDate = fileItem.lastModified()
                             )
@@ -115,11 +114,11 @@ object StorageExt {
 
                             val files = fileItem.listFiles()?.count { file -> file.isFile } ?: 0
 
-                            val newDirectoryData=DirectoryData(
+                            val newDirectoryData = DirectoryData(
                                 title = fileItem.name,
                                 path = fileItem.path,
                                 uri = fileItem.toUri().toString(),
-                                visibleType = getFileVisibleType(file = fileItem),
+                                visibleType = FileVisibleType.getFileVisibleType(file = fileItem),
                                 folders = folders,
                                 files = files,
                                 modifiedDate = fileItem.lastModified()
@@ -138,7 +137,7 @@ object StorageExt {
                 emit(value = newDirectoryFileData)
             } catch (exception: Exception) {
 
-                Log.e("StorageExt", exception.message, exception)
+                Log.w("StorageExt", exception.message, exception)
 
                 val newDirectoryFileData = DirectoryFileData(
                     folders = folderList.value.toImmutableList(),
@@ -212,7 +211,7 @@ object StorageExt {
             availableDirectories.toImmutableList()
         } catch (exception: Exception) {
 
-            Log.e("StorageExt", exception.message, exception)
+            Log.w("StorageExt", exception.message, exception)
             persistentListOf()
         }
     }
@@ -249,7 +248,7 @@ object StorageExt {
             }
         } catch (exception: Exception) {
 
-            Log.e("StorageExt", exception.message, exception)
+            Log.w("StorageExt", exception.message, exception)
             null
         }
     }
@@ -267,7 +266,7 @@ object StorageExt {
             }
         } catch (exception: Exception) {
 
-            Log.e("StorageExt", exception.message, exception)
+            Log.w("StorageExt", exception.message, exception)
             persistentListOf()
         }
     }
@@ -277,33 +276,6 @@ object StorageExt {
         return context.getExternalFilesDirs(null).toList().toImmutableList()
     }
 
-    private fun getVolumeType(volume: StorageVolume): StorageVolumeType {
-
-        return when {
-
-            volume.isPrimary -> StorageVolumeType.INTERNAL
-            volume.isRemovable -> StorageVolumeType.SD_CARD
-            else -> StorageVolumeType.OTG
-        }
-    }
-
-    fun getFileVisibleType(file: File): FileVisibleType {
-
-        return when (file.isHidden) {
-
-            true -> FileVisibleType.HIDDEN
-            false -> FileVisibleType.PUBLIC
-        }
-    }
-
-    fun getFileType(file: File): FileType {
-
-        return FileType.entries.firstOrNull { fileType ->
-
-            fileType.extension.contains(file.extension)
-        } ?: FileType.UNKNOWN
-    }
-
     fun getTotalMemory(path: String): Long {
 
         return try {
@@ -311,7 +283,7 @@ object StorageExt {
             StatFs(path).blockCountLong * StatFs(path).blockSizeLong
         } catch (exception: Exception) {
 
-            Log.e("StorageExt", exception.message, exception)
+            Log.w("StorageExt", exception.message, exception)
             0L
         }
     }
@@ -323,7 +295,7 @@ object StorageExt {
             StatFs(path).availableBlocksLong * StatFs(path).blockSizeLong
         } catch (exception: Exception) {
 
-            Log.e("StorageExt", exception.message, exception)
+            Log.w("StorageExt", exception.message, exception)
             0L
         }
     }
@@ -335,7 +307,7 @@ object StorageExt {
             getTotalMemory(path = path) - getFreeMemory(path = path)
         } catch (exception: Exception) {
 
-            Log.e("StorageExt", exception.message, exception)
+            Log.w("StorageExt", exception.message, exception)
             0L
         }
     }
