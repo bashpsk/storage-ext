@@ -93,7 +93,7 @@ publishing {
 
             groupId = "io.bashpsk"
             artifactId = "storage-ext"
-            version = "1.0.1"
+            version = "1.0.0"
 
             afterEvaluate {
 
