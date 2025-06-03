@@ -25,7 +25,6 @@ enum class FileType(
     LOG_FILE("Log File", persistentListOf("log", "trace", "audit")),
     PDF("PDF", persistentListOf("pdf")),
     PRESENTATION("Presentation", persistentListOf("ppt", "pptx", "odp")),
-    SKETCH("Sketch", persistentListOf("pde", "sketch", "ai", "psd")),
     SPREADSHEET("Spreadsheet", persistentListOf("xls", "xlsx", "csv", "ods")),
     SUB_TITLE("Sub-Title", persistentListOf("srt", "sub", "ass", "vtt", "ssa")),
     THREE_D_MODEL("3D Model", persistentListOf("blend", "obj", "fbx", "dae", "gltf", "glb")),
