@@ -8,11 +8,11 @@ enum class FileType(
     val extension: ImmutableList<String> = persistentListOf()
 ) {
 
-    ANDROID("APK", persistentListOf("apk", "aab")),
+    ANDROID("Android", persistentListOf("apk", "aab")),
     ARCHIVE("Archive", persistentListOf("zip", "rar", "7z", "tar", "gz", "xz")),
     AUDIO("Audio", persistentListOf("mp3", "wav", "aac", "flac", "ogg", "m4a")),
     BACK_UP("Back-Up", persistentListOf("bak", "backup", "dump", "bkp", "tmp")),
-    BINARY("Binary", persistentListOf("bin", "dat", "dll", "so", "class", "sys", "config", "ini")),
+    BINARY("Binary", persistentListOf("bin", "jar", "dll", "so", "class", "aar", "config", "ini")),
     DISK_IMAGE("Disk Image", persistentListOf("iso", "img", "dmg")),
     DOCUMENT("Document", persistentListOf("doc", "docx", "odt", "rtf")),
     CODE("Code", CodeFileExtensions),
@@ -28,7 +28,7 @@ enum class FileType(
     SKETCH("Sketch", persistentListOf("pde", "sketch", "ai", "psd")),
     SPREADSHEET("Spreadsheet", persistentListOf("xls", "xlsx", "csv", "ods")),
     SUB_TITLE("Sub-Title", persistentListOf("srt", "sub", "ass", "vtt", "ssa")),
-    THREE_D_MODELS("3D Models", persistentListOf("blend", "obj", "fbx", "dae", "gltf", "glb")),
+    THREE_D_MODEL("3D Model", persistentListOf("blend", "obj", "fbx", "dae", "gltf", "glb")),
     TEXT("Text", persistentListOf("txt", "md", "log", "diff", "patch", "in", "out")),
     UNKNOWN("Unknown", persistentListOf()),
     VIDEO("Video", persistentListOf("mp4", "avi", "mkv", "mov", "wmv", "flv")),
