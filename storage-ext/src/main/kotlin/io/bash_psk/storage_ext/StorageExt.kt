@@ -11,6 +11,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import java.io.File
+import kotlin.coroutines.coroutineContext
 
 object StorageExt {
 
@@ -69,6 +71,7 @@ object StorageExt {
                 }.filter { volumeData -> volumeData.path.isNotEmpty() }.toImmutableList()
             } catch (exception: Exception) {
 
+                coroutineContext.ensureActive()
                 Log.w("StorageExt", exception.message, exception)
                 persistentListOf()
             }
@@ -134,6 +137,7 @@ object StorageExt {
 
                 val newDirectoryFileData = DirectoryFileData()
 
+                coroutineContext.ensureActive()
                 Log.w("StorageExt", exception.message, exception)
                 emit(value = newDirectoryFileData)
             }
