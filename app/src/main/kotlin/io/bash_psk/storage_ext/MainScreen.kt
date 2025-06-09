@@ -101,6 +101,7 @@ fun MainScreen() {
                         fileCoroutineScope.launch(Dispatchers.IO) {
 
                             StorageExt.getDirectoryFiles(
+                                context = context,
                                 path = volume.path
                             ).collectLatest { files ->
 
@@ -144,11 +145,12 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "Folder One",
                                         isFolder = true,
-                                        visibleType = FileVisibleType.PUBLIC
-                                    ).let { result ->
+                                        visibleType = FileVisibleType.PUBLIC,
+                                        onFileResult = { result ->
 
-                                        Log.d("StorageExt", result.toString())
-                                    }
+                                            Log.d("StorageExt", result.toString())
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -168,11 +170,12 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "Folder Two",
                                         isFolder = true,
-                                        visibleType = FileVisibleType.HIDDEN
-                                    ).let { result ->
+                                        visibleType = FileVisibleType.HIDDEN,
+                                        onFileResult = { result ->
 
-                                        Log.d("StorageExt", result.toString())
-                                    }
+                                            Log.d("StorageExt", result.toString())
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -192,11 +195,12 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "File One.txt",
                                         isFolder = false,
-                                        visibleType = FileVisibleType.PUBLIC
-                                    ).let { result ->
+                                        visibleType = FileVisibleType.PUBLIC,
+                                        onFileResult = { result ->
 
-                                        Log.d("StorageExt", result.toString())
-                                    }
+                                            Log.d("StorageExt", result.toString())
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -216,11 +220,12 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "File Two.txt",
                                         isFolder = false,
-                                        visibleType = FileVisibleType.HIDDEN
-                                    ).let { result ->
+                                        visibleType = FileVisibleType.HIDDEN,
+                                        onFileResult = { result ->
 
-                                        Log.d("StorageExt", result.toString())
-                                    }
+                                            Log.d("StorageExt", result.toString())
+                                        }
+                                    )
                                 }
                             }
                         }
