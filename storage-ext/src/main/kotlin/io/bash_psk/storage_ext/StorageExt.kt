@@ -242,11 +242,10 @@ object StorageExt {
         parentPath: String,
         name: String,
         isFolder: Boolean,
-        visibleType: FileVisibleType = FileVisibleType.PUBLIC,
-        onFileResult: (result: MakeFileResult) -> Unit
-    ) {
+        visibleType: FileVisibleType = FileVisibleType.PUBLIC
+    ): MakeFileResult {
 
-        withContext(context = Dispatchers.IO) {
+        return withContext(context = Dispatchers.IO) {
 
             try {
 
@@ -258,7 +257,25 @@ object StorageExt {
                     FileVisibleType.HIDDEN -> File(parentPath, ".$fileName")
                 }
 
-                val result = when (sourceFile.exists()) {
+                makeFolderOrFile(destination = sourceFile.path, isFolder = isFolder)
+            } catch (exception: Exception) {
+
+                coroutineContext.ensureActive()
+                Log.e("StorageExt", exception.message, exception)
+                MakeFileResult.Failed(message = exception.message ?: "Unknown Error")
+            }
+        }
+    }
+
+    suspend fun makeFolderOrFile(destination: String, isFolder: Boolean): MakeFileResult {
+
+        return withContext(context = Dispatchers.IO) {
+
+            try {
+
+                val sourceFile = File(destination)
+
+                when (sourceFile.exists()) {
 
                     true -> MakeFileResult.Exist(path = sourceFile.path, name = sourceFile.name)
 
@@ -277,13 +294,11 @@ object StorageExt {
                         }
                     }
                 }
-
-                onFileResult(result)
             } catch (exception: Exception) {
 
                 coroutineContext.ensureActive()
                 Log.e("StorageExt", exception.message, exception)
-                onFileResult(MakeFileResult.Failed(message = exception.message ?: "Unknown Error"))
+                MakeFileResult.Failed(message = exception.message ?: "Unknown Error")
             }
         }
     }

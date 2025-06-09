@@ -145,12 +145,11 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "Folder One",
                                         isFolder = true,
-                                        visibleType = FileVisibleType.PUBLIC,
-                                        onFileResult = { result ->
+                                        visibleType = FileVisibleType.PUBLIC
+                                    ).let { result ->
 
-                                            Log.d("StorageExt", result.toString())
-                                        }
-                                    )
+                                        Log.d("StorageExt", result.toString())
+                                    }
                                 }
                             }
                         }
@@ -170,12 +169,11 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "Folder Two",
                                         isFolder = true,
-                                        visibleType = FileVisibleType.HIDDEN,
-                                        onFileResult = { result ->
+                                        visibleType = FileVisibleType.HIDDEN
+                                    ).let { result ->
 
-                                            Log.d("StorageExt", result.toString())
-                                        }
-                                    )
+                                        Log.d("StorageExt", result.toString())
+                                    }
                                 }
                             }
                         }
@@ -195,12 +193,11 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "File One.txt",
                                         isFolder = false,
-                                        visibleType = FileVisibleType.PUBLIC,
-                                        onFileResult = { result ->
+                                        visibleType = FileVisibleType.PUBLIC
+                                    ).let { result ->
 
-                                            Log.d("StorageExt", result.toString())
-                                        }
-                                    )
+                                        Log.d("StorageExt", result.toString())
+                                    }
                                 }
                             }
                         }
@@ -220,12 +217,11 @@ fun MainScreen() {
                                         parentPath = volume.path,
                                         name = "File Two.txt",
                                         isFolder = false,
-                                        visibleType = FileVisibleType.HIDDEN,
-                                        onFileResult = { result ->
+                                        visibleType = FileVisibleType.HIDDEN
+                                    ).let { result ->
 
-                                            Log.d("StorageExt", result.toString())
-                                        }
-                                    )
+                                        Log.d("StorageExt", result.toString())
+                                    }
                                 }
                             }
                         }
