@@ -281,6 +281,7 @@ object StorageExt {
                 onFileResult(result)
             } catch (exception: Exception) {
 
+                coroutineContext.ensureActive()
                 Log.e("StorageExt", exception.message, exception)
                 onFileResult(MakeFileResult.Failed(message = exception.message ?: "Unknown Error"))
             }
