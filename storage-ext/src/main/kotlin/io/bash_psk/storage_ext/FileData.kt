@@ -17,8 +17,9 @@ data class FileData(
     val path: String = "",
     val uri: String = "",
     val extension: String = "",
-    val visibleType: FileVisibleType = FileVisibleType.UNKNOWN,
+    val visibleType: FileVisibleType = FileVisibleType.PUBLIC,
     val fileType: FileType = FileType.UNKNOWN,
     val size: Long = 0L,
-    val modifiedDate: Long = 0L
+    val modifiedDate: Long = 0L,
+    val storage: StorageVolumeData = StorageVolumeData()
 ) : Parcelable

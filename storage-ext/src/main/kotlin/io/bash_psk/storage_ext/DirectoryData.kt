@@ -16,8 +16,9 @@ data class DirectoryData(
     val title: String = "",
     val path: String = "",
     val uri: String = "",
-    val visibleType: FileVisibleType = FileVisibleType.UNKNOWN,
+    val visibleType: FileVisibleType = FileVisibleType.PUBLIC,
     val folders: Int = 0,
     val files: Int = 0,
-    val modifiedDate: Long = 0L
+    val modifiedDate: Long = 0L,
+    val storage: StorageVolumeData = StorageVolumeData()
 ) : Parcelable

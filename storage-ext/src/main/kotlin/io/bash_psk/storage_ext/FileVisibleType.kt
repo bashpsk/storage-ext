@@ -6,8 +6,7 @@ import java.io.File
 enum class FileVisibleType(val label: String = "") {
 
     PUBLIC(label = "Public"),
-    HIDDEN(label = "Hidden"),
-    UNKNOWN(label = "Unknown");
+    HIDDEN(label = "Hidden");
 
     companion object {
 
@@ -23,7 +22,7 @@ enum class FileVisibleType(val label: String = "") {
             } catch (exception: Exception) {
 
                 Log.w("StorageExt", exception.message, exception)
-                UNKNOWN
+                PUBLIC
             }
         }
     }

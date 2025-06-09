@@ -12,5 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DirectoryFileData(
     val folders: ImmutableList<DirectoryData> = persistentListOf(),
-    val files: ImmutableList<FileData> = persistentListOf()
+    val files: ImmutableList<FileData> = persistentListOf(),
+    val storage: StorageVolumeData = StorageVolumeData(),
+    val directory: DirectoryData = DirectoryData()
 ) : Parcelable

@@ -3,7 +3,6 @@ package io.bash_psk.storage_ext
 import android.content.Context
 import android.os.Build
 import android.os.Environment
-import android.os.StatFs
 import android.os.storage.StorageManager
 import android.util.Log
 import androidx.core.net.toUri
@@ -16,7 +15,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import java.io.File
 
 object StorageExt {
@@ -76,7 +77,7 @@ object StorageExt {
         }.flowOn(context = Dispatchers.IO)
     }
 
-    fun getDirectoryFiles(path: String): Flow<DirectoryFileData> {
+    fun getDirectoryFiles(context: Context, path: String): Flow<DirectoryFileData> {
 
         return flow {
 
@@ -85,112 +86,200 @@ object StorageExt {
 
             try {
 
+                val storageVolumeList = getStorageVolumes(
+                    context = context
+                ).toList().flatten().distinctBy { storage -> storage.path }.toImmutableList()
+
                 File(path).listFiles()?.forEach { fileItem ->
 
                     when (fileItem.isFile) {
 
-                        true -> {
-
-                            val newFileData = FileData(
-                                title = fileItem.name,
-                                path = fileItem.path,
-                                uri = fileItem.toUri().toString(),
-                                extension = fileItem.extension,
-                                visibleType = FileVisibleType.getFileVisibleType(file = fileItem),
-                                fileType = FileType.getFileType(extension = fileItem.extension),
-                                size = fileItem.length(),
-                                modifiedDate = fileItem.lastModified()
-                            )
+                        true -> getFileData(
+                            file = fileItem,
+                            storageVolumes = storageVolumeList
+                        )?.let { newFileData ->
 
                             fileList.update { filesOld -> filesOld.add(element = newFileData) }
                         }
 
-                        false -> {
-
-                            val folders = fileItem.listFiles()?.count { folder ->
-
-                                folder.isDirectory
-                            } ?: 0
-
-                            val files = fileItem.listFiles()?.count { file -> file.isFile } ?: 0
-
-                            val newDirectoryData = DirectoryData(
-                                title = fileItem.name,
-                                path = fileItem.path,
-                                uri = fileItem.toUri().toString(),
-                                visibleType = FileVisibleType.getFileVisibleType(file = fileItem),
-                                folders = folders,
-                                files = files,
-                                modifiedDate = fileItem.lastModified()
-                            )
+                        false -> getDirectoryData(
+                            file = fileItem,
+                            storageVolumes = storageVolumeList
+                        )?.let { newDirectoryData ->
 
                             folderList.update { foldersOld -> foldersOld.add(newDirectoryData) }
                         }
                     }
                 }
 
+                val directoryData = getDirectoryData(
+                    path = path,
+                    storageVolumes = storageVolumeList
+                ) ?: DirectoryData()
+
+                val storageVolume = findStorageVolumeData(
+                    path = path,
+                    storageVolumes = storageVolumeList
+                ) ?: StorageVolumeData()
+
                 val newDirectoryFileData = DirectoryFileData(
                     folders = folderList.value.toImmutableList(),
-                    files = fileList.value.toImmutableList()
+                    files = fileList.value.toImmutableList(),
+                    storage = storageVolume,
+                    directory = directoryData
                 )
 
                 emit(value = newDirectoryFileData)
             } catch (exception: Exception) {
 
+                val newDirectoryFileData = DirectoryFileData()
+
                 Log.w("StorageExt", exception.message, exception)
-
-                val newDirectoryFileData = DirectoryFileData(
-                    folders = folderList.value.toImmutableList(),
-                    files = fileList.value.toImmutableList()
-                )
-
                 emit(value = newDirectoryFileData)
             }
         }.flowOn(context = Dispatchers.IO)
     }
 
-    fun makeFolderOrFile(
-        parentPath: String,
-        name: String,
-        isFolder: Boolean,
-        visibleType: FileVisibleType = FileVisibleType.PUBLIC
-    ): MakeFileResult {
+    fun findStorageVolumeData(
+        path: String,
+        storageVolumes: ImmutableList<StorageVolumeData> = persistentListOf()
+    ): StorageVolumeData? {
+
+        return findStorageVolumeData(file = File(path), storageVolumes = storageVolumes)
+    }
+
+    fun findStorageVolumeData(
+        file: File,
+        storageVolumes: ImmutableList<StorageVolumeData> = persistentListOf()
+    ): StorageVolumeData? {
+
+        return storageVolumes.find { storage -> file.path.startsWith(storage.path) }
+    }
+
+    fun getDirectoryData(
+        path: String,
+        storageVolumes: ImmutableList<StorageVolumeData> = persistentListOf()
+    ): DirectoryData? {
+
+        return getDirectoryData(file = File(path), storageVolumes = storageVolumes)
+    }
+
+    fun getDirectoryData(
+        file: File,
+        storageVolumes: ImmutableList<StorageVolumeData> = persistentListOf()
+    ): DirectoryData? {
 
         return try {
 
-            val sourceFile = when (visibleType) {
+            val storageVolume = findStorageVolumeData(
+                file = file,
+                storageVolumes = storageVolumes
+            ) ?: StorageVolumeData()
 
-                FileVisibleType.PUBLIC -> File(parentPath, name)
-                FileVisibleType.HIDDEN -> File(parentPath, ".$name")
-                FileVisibleType.UNKNOWN -> File(parentPath, name)
-            }
+            val folders = file.listFiles()?.count { folder -> folder.isDirectory } ?: 0
+            val files = file.listFiles()?.count { file -> file.isFile } ?: 0
 
-            when (sourceFile.exists()) {
-
-                true -> {
-
-                    MakeFileResult.Exist(path = sourceFile.path, name = sourceFile.name)
-                }
-
-                false -> {
-
-                    val result = when (isFolder) {
-
-                        true -> sourceFile.mkdirs()
-                        false -> sourceFile.createNewFile()
-                    }
-
-                    when (result) {
-
-                        true -> MakeFileResult.Success(sourceFile.path, sourceFile.name)
-                        false -> MakeFileResult.Failed(message = "Directory File Does Not Created!")
-                    }
-                }
-            }
+            DirectoryData(
+                title = file.name,
+                path = file.path,
+                uri = file.toUri().toString(),
+                visibleType = FileVisibleType.getFileVisibleType(file = file),
+                folders = folders,
+                files = files,
+                modifiedDate = file.lastModified(),
+                storage = storageVolume
+            )
         } catch (exception: Exception) {
 
-            Log.e("StorageExt", exception.message, exception)
-            MakeFileResult.Failed(message = exception.message ?: "Unknown Error")
+            Log.w("StorageExt", exception.message, exception)
+            null
+        }
+    }
+
+    fun getFileData(
+        path: String,
+        storageVolumes: ImmutableList<StorageVolumeData> = persistentListOf()
+    ): FileData? {
+
+        return getFileData(file = File(path), storageVolumes = storageVolumes)
+    }
+
+    fun getFileData(
+        file: File,
+        storageVolumes: ImmutableList<StorageVolumeData> = persistentListOf()
+    ): FileData? {
+
+        return try {
+
+            val storageVolume = findStorageVolumeData(
+                file = file,
+                storageVolumes = storageVolumes
+            ) ?: StorageVolumeData()
+
+            FileData(
+                title = file.name,
+                path = file.path,
+                uri = file.toUri().toString(),
+                extension = file.extension,
+                visibleType = FileVisibleType.getFileVisibleType(file = file),
+                fileType = FileType.getFileType(extension = file.extension),
+                size = file.length(),
+                modifiedDate = file.lastModified(),
+                storage = storageVolume
+            )
+        } catch (exception: Exception) {
+
+            Log.w("StorageExt", exception.message, exception)
+            null
+        }
+    }
+
+    suspend fun makeFolderOrFile(
+        parentPath: String,
+        name: String,
+        isFolder: Boolean,
+        visibleType: FileVisibleType = FileVisibleType.PUBLIC,
+        onFileResult: (result: MakeFileResult) -> Unit
+    ) {
+
+        withContext(context = Dispatchers.IO) {
+
+            try {
+
+                val fileName = name.trimStart { it == '.' }
+
+                val sourceFile = when (visibleType) {
+
+                    FileVisibleType.PUBLIC -> File(parentPath, fileName)
+                    FileVisibleType.HIDDEN -> File(parentPath, ".$fileName")
+                }
+
+                val result = when (sourceFile.exists()) {
+
+                    true -> MakeFileResult.Exist(path = sourceFile.path, name = sourceFile.name)
+
+                    false -> {
+
+                        val result = when (isFolder) {
+
+                            true -> sourceFile.mkdirs()
+                            false -> sourceFile.createNewFile()
+                        }
+
+                        when (result) {
+
+                            true -> MakeFileResult.Success(sourceFile.path, sourceFile.name)
+                            false -> MakeFileResult.Failed("Directory File Does Not Created!")
+                        }
+                    }
+                }
+
+                onFileResult(result)
+            } catch (exception: Exception) {
+
+                Log.e("StorageExt", exception.message, exception)
+                onFileResult(MakeFileResult.Failed(message = exception.message ?: "Unknown Error"))
+            }
         }
     }
 
@@ -278,9 +367,14 @@ object StorageExt {
 
     fun getTotalMemory(path: String): Long {
 
+        return getTotalMemory(file = File(path))
+    }
+
+    fun getTotalMemory(file: File): Long {
+
         return try {
 
-            StatFs(path).blockCountLong * StatFs(path).blockSizeLong
+            file.totalSpace
         } catch (exception: Exception) {
 
             Log.w("StorageExt", exception.message, exception)
@@ -290,9 +384,14 @@ object StorageExt {
 
     fun getFreeMemory(path: String): Long {
 
+        return getFreeMemory(file = File(path))
+    }
+
+    fun getFreeMemory(file: File): Long {
+
         return try {
 
-            StatFs(path).availableBlocksLong * StatFs(path).blockSizeLong
+            file.freeSpace
         } catch (exception: Exception) {
 
             Log.w("StorageExt", exception.message, exception)
@@ -302,9 +401,14 @@ object StorageExt {
 
     fun getUsedMemory(path: String): Long {
 
+        return getUsedMemory(file = File(path))
+    }
+
+    fun getUsedMemory(file: File): Long {
+
         return try {
 
-            getTotalMemory(path = path) - getFreeMemory(path = path)
+            file.totalSpace - file.freeSpace
         } catch (exception: Exception) {
 
             Log.w("StorageExt", exception.message, exception)
