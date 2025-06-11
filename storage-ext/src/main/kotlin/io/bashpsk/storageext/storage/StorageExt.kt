@@ -313,7 +313,7 @@ object StorageExt {
             when (emulatedStorage?.isNotEmpty() == true) {
 
                 true -> getEmulatedStorageTarget()?.let(availableDirectories::add)
-                false -> availableDirectories.addAll(elements = getExternalStorage(context = context))
+                false -> availableDirectories.addAll(elements = getExternalStorage(context))
             }
 
             availableDirectories.addAll(elements = getAllSecondaryStorages().toList())
@@ -433,6 +433,44 @@ object StorageExt {
 
             Log.w("StorageExt", exception.message, exception)
             0L
+        }
+    }
+
+    suspend fun getFileSize(path: String): Long {
+
+        return getFileSize(paths = persistentListOf(path))
+    }
+
+    suspend fun getFileSize(paths: ImmutableList<String>): Long {
+
+        val files = paths.map { path -> File(path) }
+
+        return withContext(context = Dispatchers.IO) {
+
+            try {
+
+                val foldersFileSize = files.filter { folder ->
+
+                    folder.isDirectory
+                }.map { folder ->
+
+                    folder.walkTopDown().filter { file ->
+
+                        file.isFile
+                    }.map { file ->
+
+                        file.length()
+                    }.toImmutableList()
+                }.flatten().sum()
+
+                val fileSize = files.filter { file -> file.isFile }.sumOf { file -> file.length() }
+
+                foldersFileSize + fileSize
+            } catch (exception: Exception) {
+
+                Log.w("StorageExt", exception.message, exception)
+                0L
+            }
         }
     }
 }

@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
-fun MainScreen() {
+fun StorageDemoScreen() {
 
     val context = LocalContext.current
     val fileCoroutineScope = rememberCoroutineScope()
