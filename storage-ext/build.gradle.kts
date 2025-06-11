@@ -10,8 +10,8 @@ plugins {
 
 android {
 
-    namespace = "io.bash_psk.storage_ext"
-    compileSdk = 35
+    namespace = "io.bashpsk.storageext"
+    compileSdk = 36
 
     defaultConfig {
 
