@@ -1,4 +1,4 @@
-package io.bashpsk.storageext
+package io.bashpsk.storageextdemo
 
 import org.junit.Test
 

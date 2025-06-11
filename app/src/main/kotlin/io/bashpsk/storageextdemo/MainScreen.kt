@@ -129,7 +129,7 @@ fun MainScreen() {
                                     Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
                                 ).apply {
 
-                                    Intent.setData = ("package:" + context.packageName).toUri()
+                                    data = ("package:" + context.packageName).toUri()
                                 }.let(context::startActivity)
                             }
                         }
