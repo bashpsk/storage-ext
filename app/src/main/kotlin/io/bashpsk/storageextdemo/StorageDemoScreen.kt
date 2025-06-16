@@ -50,7 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.bash_psk.empty_format.EmptyFormat
+import io.bashpsk.emptyformat.EmptyFormat
 import io.bashpsk.storageext.storage.FileVisibleType
 import io.bashpsk.storageext.storage.StorageExt
 import io.bashpsk.storageext.storage.StorageVolumeData

@@ -21,7 +21,7 @@ enum class FileType(
     FONT("Font", persistentListOf("ttf", "otf", "woff", "woff2")),
     GAME_DATA("Game Data", persistentListOf("dat", "sav", "cfg", "pak", "obb")),
     GIF("Gif", persistentListOf("gif")),
-    IMAGE("Image", persistentListOf("jpg", "jpeg", "png", "bmp", "webp")),
+    IMAGE("Image", persistentListOf("jpg", "jpeg", "png", "bmp", "webp", "svg")),
     LOG_FILE("Log File", persistentListOf("log", "trace", "audit")),
     PDF("PDF", persistentListOf("pdf")),
     PRESENTATION("Presentation", persistentListOf("ppt", "pptx", "odp")),
@@ -31,7 +31,7 @@ enum class FileType(
     TEXT("Text", persistentListOf("txt", "md", "log", "diff", "patch", "in", "out")),
     UNKNOWN("Unknown", persistentListOf()),
     VIDEO("Video", persistentListOf("mp4", "avi", "mkv", "mov", "wmv", "flv")),
-    VECTOR("Vector", persistentListOf("svg", "eps", "cdr"));
+    VECTOR("Vector", persistentListOf("eps", "cdr"));
 
     companion object {
 
