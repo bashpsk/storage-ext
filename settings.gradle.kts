@@ -29,6 +29,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Storage Ext"
+rootProject.name = "Storage"
 include(":app")
 include(":storage-ext")

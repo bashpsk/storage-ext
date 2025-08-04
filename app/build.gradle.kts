@@ -11,12 +11,12 @@ plugins {
 
 android {
 
-    namespace = "io.bashpsk.storageextdemo"
+    namespace = "io.bashpsk.storagedemo"
     compileSdk = 36
 
     defaultConfig {
 
-        applicationId = "io.bashpsk.storageextdemo"
+        applicationId = "io.bashpsk.storagedemo"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

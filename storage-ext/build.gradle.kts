@@ -28,6 +28,7 @@ android {
         release {
 
             isMinifyEnabled = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -93,7 +94,7 @@ publishing {
 
         register<MavenPublication>("release") {
 
-            groupId = "io.bashpsk"
+            groupId = "io.bashpsk.storage"
             artifactId = "storage-ext"
             version = "1.0.0"
 
