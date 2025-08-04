@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
 
             StorageExtTheme {
 
-                ArchiveDemoScreen()
+                StorageDemoScreen()
             }
         }
     }
