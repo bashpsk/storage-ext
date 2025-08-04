@@ -7,6 +7,22 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
+/**
+ * Represents the data associated with a directory's contents, including its subfolders, files,
+ * the storage volume it belongs to, and information about the directory itself.
+ *
+ * This class is designed to be immutable and parcelable, making it suitable for use in Android
+ * applications, particularly with Jetpack Compose and data serialization.
+ *
+ * @property folders An immutable list of [DirectoryData] objects representing the subfolders
+ * within this directory. Defaults to an empty persistent list.
+ * @property files An immutable list of [FileData] objects representing the files
+ * within this directory. Defaults to an empty persistent list.
+ * @property storage Information about the storage volume where this directory resides.
+ * Defaults to a default [StorageVolumeData] instance.
+ * @property directory Information about the directory itself. Defaults to a default
+ * [DirectoryData] instance.
+ */
 @Immutable
 @Parcelize
 @Serializable

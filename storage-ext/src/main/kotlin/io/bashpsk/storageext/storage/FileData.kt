@@ -7,6 +7,28 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+/**
+ * Represents a file's metadata.
+ *
+ * This data class is used to store information about a file, such as its unique identifier,
+ * title, path, URI, extension, visibility, type, size, modification date, and storage volume.
+ *
+ * It is designed to be immutable, parcelable (for Android), and serializable
+ * (for data persistence).
+ *
+ * @property uuid A unique identifier for the file, generated randomly by default.
+ * @property title The title or display name of the file.
+ * @property path The absolute file system path to the file.
+ * @property uri The content URI of the file, typically used for accessing files through content
+ * providers.
+ * @property extension The file extension (e.g., "txt", "jpg").
+ * @property visibleType The visibility type of the file (e.g., public, private).
+ * @property fileType The general type of the file (e.g., document, image, video).
+ * @property size The size of the file in bytes.
+ * @property modifiedDate The last modification timestamp of the file, in milliseconds since the
+ * epoch.
+ * @property storage Information about the storage volume where the file is located.
+ */
 @OptIn(ExperimentalUuidApi::class)
 @Immutable
 @Parcelize

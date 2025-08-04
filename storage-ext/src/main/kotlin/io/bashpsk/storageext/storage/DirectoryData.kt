@@ -7,6 +7,25 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+/**
+ * Represents data associated with a directory.
+ * This class is designed to be immutable, parcelable for Android IPC, and serializable.
+ *
+ * @property uuid A unique identifier for the directory, generated using [Uuid.random].
+ * @property title The display name or title of the directory. Defaults to an empty string.
+ * @property path The absolute file system path of the directory. Defaults to an empty string.
+ * @property uri The content URI of the directory, if applicable (e.g., for SAF). Defaults to an
+ * empty string.
+ * @property visibleType The visibility type of the directory (e.g., public, private). Defaults to
+ * [FileVisibleType.PUBLIC].
+ * @property folders The number of subfolders contained within this directory. Defaults to 0.
+ * @property files The number of files (excluding subfolders) contained within this directory.
+ * Defaults to 0.
+ * @property modifiedDate The last modified timestamp of the directory, in milliseconds since the
+ * epoch. Defaults to 0L.
+ * @property storage Information about the storage volume where this directory resides. Defaults to
+ * a default [StorageVolumeData] instance.
+ */
 @OptIn(ExperimentalUuidApi::class)
 @Immutable
 @Parcelize
