@@ -14,11 +14,7 @@ enum class FileVisibleType(val label: String = "") {
 
             return try {
 
-                when (file.isHidden) {
-
-                    true -> HIDDEN
-                    false -> PUBLIC
-                }
+                if (file.isHidden) HIDDEN else PUBLIC
             } catch (exception: Exception) {
 
                 Log.w("StorageExt", exception.message, exception)

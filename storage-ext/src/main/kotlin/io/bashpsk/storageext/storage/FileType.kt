@@ -29,9 +29,9 @@ enum class FileType(
     SUB_TITLE("Sub-Title", persistentListOf("srt", "sub", "ass", "vtt", "ssa")),
     THREE_D_MODEL("3D Model", persistentListOf("blend", "obj", "fbx", "dae", "gltf", "glb")),
     TEXT("Text", persistentListOf("txt", "md", "log", "diff", "patch", "in", "out")),
-    UNKNOWN("Unknown", persistentListOf()),
     VIDEO("Video", persistentListOf("mp4", "avi", "mkv", "mov", "wmv", "flv")),
-    VECTOR("Vector", persistentListOf("eps", "cdr"));
+    VECTOR("Vector", persistentListOf("eps", "cdr")),
+    UNKNOWN("Unknown", persistentListOf());
 
     companion object {
 
